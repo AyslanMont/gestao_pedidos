@@ -1,14 +1,25 @@
 from gestao_pedidos import app
 from gestao_pedidos.database.config import mysql
 from gestao_pedidos.models.User import User
+from gestao_pedidos.models.Orders import Orders
 from flask import render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 
+@app.route('/')
+def index():
+    return render_template("index.html")
+
 @app.route('/home')
 @login_required
 def home():
-    return render_template("home.html")
+    ordem = request.args.get('ordem', 'asc')
+    
+    dados = Orders.get_all(ordem)
+
+    return render_template("home.html", dados=dados, ordem=ordem)
+
+
 
 @app.route('/register', methods=["GET", "POST"])
 def register():
@@ -28,7 +39,7 @@ def register():
     
     return render_template("register.html")
 
-@app.route('/', methods=["GET", "POST"])
+@app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         email = request.form['email']

@@ -8,7 +8,7 @@ from flask_login import login_required, current_user
 @app.route('/cadastrar_pedido', methods=['GET', 'POST'])
 def cadastrar_pedido():
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     # Obter clientes e produtos cadastrados
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM tb_clientes")
@@ -50,7 +50,7 @@ def cadastrar_pedido():
 @app.route('/listar_pedidos', methods=['GET'])
 def listar_pedidos():
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     ordem = request.args.get('ordem', 'asc')
     dados = Orders.get_all(ordem)
     if dados is None:
@@ -60,7 +60,7 @@ def listar_pedidos():
 @app.route('/editar_pedido/<int:ped_id>', methods=['GET', 'POST'])
 def editar_pedido(ped_id):
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     cursor = mysql.connection.cursor()
     if request.method == 'POST':
         # Recuperar os dados do formulário

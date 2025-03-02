@@ -9,7 +9,7 @@ from flask_login import  login_required,current_user
 @app.route('/cadastrar_produto', methods=['GET', 'POST'])
 def cadastrar_produto():
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     if request.method == 'POST':
         nome = request.form['nome']
         descricao = request.form['descricao']
@@ -27,7 +27,7 @@ def cadastrar_produto():
 @app.route('/listar_produtos', methods=['GET', 'POST'])
 def listar_produtos():
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     # Inicializa o carrinho na sessão, se ainda não existir
     if 'produtos_adicionados' not in session:
         session['produtos_adicionados'] = []
@@ -77,7 +77,7 @@ def listar_produtos():
 @app.route('/editar_produto/<int:pro_id>', methods=['GET', 'POST'])
 def editar_produto(pro_id):
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
 
     cursor = mysql.connection.cursor()
 

@@ -2,13 +2,29 @@ from gestao_pedidos import app
 from gestao_pedidos.database.config import mysql
 from gestao_pedidos.models.User import User
 from gestao_pedidos.models.Orders import Orders
+import os
 from flask import render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 
 @app.route('/')
 def index():
-    return render_template("index.html")
+    cursor = mysql.connection.cursor()
+
+    cursor.execute("SELECT * FROM tb_admin WHERE admin_email = %s", (os.getenv('EMAIL_ADMIN'),))
+    admin = cursor.fetchone()
+
+    if not admin:
+        senha_hash = generate_password_hash(os.getenv('SENHA_ADMIN'))
+        cursor.execute(
+            "INSERT INTO tb_admin (admin_nome, admin_email, admin_senha) VALUES (%s, %s, %s)",
+            (os.getenv('NOME_ADMIN'), os.getenv('EMAIL_ADMIN'), senha_hash)
+        )
+        mysql.connection.commit()
+        print("Administrador padrão criado com sucesso!")
+
+    cursor.close()
+    return render_template('index.html')
 
 @app.route('/home')
 @login_required
@@ -21,37 +37,18 @@ def home():
 
 
 
-@app.route('/register', methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
-        nome = request.form['nome']
-        email = request.form['email']
-        senha = request.form['password']
-        user = User.get_by_email(email)
-        senha_hash = generate_password_hash(senha)
-
-        if user:
-            flash("O usuário já está cadastrado!", "danger")
-        else:
-            user = User.save(nome, email, senha_hash)
-            flash("Registro efetuado com sucesso! Use suas credenciais para fazer login.", "success")
-            return redirect(url_for("login"))
-    
-    return render_template("register.html")
-
-@app.route('/login', methods=["GET", "POST"])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == "POST":
+    if request.method == 'POST':
         email = request.form['email']
         senha = request.form['password']
         user = User.get_by_email(email)
-        if user and check_password_hash(user.senha, senha):
+        if user and user.verify_password(senha):
             login_user(user)
-            return redirect(url_for("home"))
+            return redirect(url_for('home'))
         else:
             flash("Email ou senha incorretos. Verifique suas credenciais e tente novamente.", "danger")
-    
-    return render_template("login.html")
+    return render_template('login.html')
 
 @app.route("/logout")
 def logout():

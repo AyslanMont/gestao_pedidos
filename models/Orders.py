@@ -41,6 +41,18 @@ class Orders:
         return {"success": True, "message": "Pedido cadastrado com sucesso!"}
 
     @staticmethod
+    def calcular_total_pedido(pedido_id):
+        cursor = mysql.connection.cursor()
+        cursor.execute("""
+            SELECT SUM(proPed_subtotal) AS total 
+            FROM tb_proPed 
+            WHERE proPed_ped_id = %s
+        """, (pedido_id,))
+        total = cursor.fetchone()['total']
+        cursor.close()
+        return total
+
+    @staticmethod
     def get_all(ordem='asc'):
         query = f'''
             SELECT 

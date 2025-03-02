@@ -1,102 +1,136 @@
-<header>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <style>
         body {
+            background-color: #e6f0ff;
             font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
+        }
+
+        .container-custom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-container img {
+            width: 100%;
+            max-width: 500px;
         }
 
         #form-container {
-            max-width: 600px;
-            padding: 20px;
-            margin: 50px auto;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            background-color: #f8f9fa;
+            padding: 30px;
             border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
         }
 
         .form-label {
             font-weight: bold;
         }
 
+        .input-container {
+            position: relative;
+        }
+
+        .input-container img {
+            position: absolute;
+            left: 10px; /* Ajuste a posição horizontal do ícone */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px; /* Tamanho do ícone */
+            height: 20px; /* Tamanho do ícone */
+            pointer-events: none; /* Permite clicar no input */
+        }
+
         input.form-control {
-            border: 1px solid #ced4da;
-            padding: 10px 15px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
+            padding-left: 40px; /* Espaço para o ícone */
         }
 
-        input.form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
+        @media (max-width: 768px) {
+            .container-custom {
+                flex-direction: column;
+                height: auto;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
 
-        button[type="submit"] {
-            background-color: #007bff;
-            color: #fff;
-            font-weight: bold;
-            padding: 10px 20px;
-            font-size: 1rem;
-            transition: background-color 0.3s, transform 0.2s;
-        }
+            .image-container {
+                order: 1;
+                width: 50%;
+                max-width: 200px;
+            }
 
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-            transform: scale(1.02);
-        }
-
-        .form-text {
-            font-size: 0.9rem;
-            color: #6c757d;
-        }
-
-        a.link-opacity-100 {
-            color: #007bff;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        a.link-opacity-100:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-
-        .text-center p {
-            font-size: 1.5rem;
-            color: #555;
-        }
-
-        i {
-            color: #007bff;
+            #form-container {
+                order: 2;
+                width: 50%;
+            }
         }
     </style>
-{% extends "base_nao_logado.html" %}
-
-{% block content %}
-
-<div class="text-center mt-5">
-    <i class="bi bi-person-circle fs-1"></i>
-    <p class="fs-3">Bem vindo</p>
-</div>
-
-
-<div id='form-container'class="container mt-5">
-    <form class="w-50 mx-auto" action="{{ url_for('login') }}" method="POST">
-        <div class="mb-3">
-            <label for="loginemail" class="form-label">Email</label>
-            <input type="email" class="form-control rounded-pill" id="loginemail" aria-describedby="emailHelp"
-                name="email" required placeholder="Digite seu email...">
-            <div id="emailHelp" class="form-text">Não compartilharemos seu e-mail com mais ninguém.</div>
+</head>
+<body>
+    <div class="container container-custom">
+        <div class="row w-100">
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <div class="image-container">
+                    <img src="{{ url_for('static', filename='img/gestor.svg') }}" alt="Gestor">
+                </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-center">
+                <div id="form-container">
+                    <form action="{{ url_for('login') }}" method="POST" class="text-center">
+                        <i class="bi bi-person-circle fs-1"></i>
+                        <p class="fs-3">Bem-vindo</p>
+                        
+                        <div class="mb-3 input-container">
+                            <img src="{{ url_for('static', filename='img/email.png') }}" alt="Ícone Email">
+                            <input type="email" class="form-control" id="loginemail" name="email" required placeholder="Digite seu email...">
+                        </div>
+                        <div class="mb-3 input-container">
+                            <img src="{{ url_for('static', filename='img/trancar.png') }}" alt="Ícone Senha">
+                            <input type="password" class="form-control" id="loginsenha" name="password" required placeholder="Digite sua senha...">
+                            <button type="button" id="toggleSenha" class="btn btn-outline-secondary" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                        <hr>
+                    </form>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="loginsenha" class="form-label">Senha</label>
-            <input type="password" class="form-control rounded-pill" id="loginsenha" name="password" required
-                placeholder="Digite sua senha...">
-        </div>
-        <button type="submit" class="btn btn-primary w-50 mx-auto d-block rounded-pill">Entrar</button>
-        <hr>
-        <p>Ainda não tem conta? <a class="link-opacity-100" href="{{ url_for('register') }}">Click aqui!</a></p>
-    </form>
-</div>
+    </div>
 
-{% endblock %}
+    <script>
+        document.getElementById('toggleSenha').addEventListener('click', function () {
+            let passwordInput = document.getElementById('loginsenha');
+            let icon = this.querySelector('i');
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = "password";
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

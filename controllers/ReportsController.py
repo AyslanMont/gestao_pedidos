@@ -4,12 +4,10 @@ from flask import render_template, request, flash,redirect,url_for
 from flask_login import login_required,current_user
 
 
-
-
 @app.route('/relatorios', methods=['GET', 'POST'])
 def relatorios():
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     resultado = None
     cursor = mysql.connection.cursor()
 
@@ -74,3 +72,19 @@ def relatorios():
             cursor.close()
 
     return render_template('relatorios.html', resultado=resultado)
+
+
+
+@app.route('/logs_pedidos')
+@login_required
+def logs_pedidos():
+    if current_user.usu_tipo != 'admin':
+        flash("Acesso negado. Somente administradores podem visualizar os logs.", "danger")
+        return redirect(url_for('home'))
+
+    cursor = mysql.connection.cursor()
+    cursor.execute("SELECT * FROM logs_pedidos ORDER BY data_hora DESC")
+    logs = cursor.fetchall()
+    cursor.close()
+
+    return render_template('logs.html', logs=logs)

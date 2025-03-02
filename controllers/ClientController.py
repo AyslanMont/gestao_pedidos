@@ -9,7 +9,7 @@ from flask_login import login_required,current_user
 @app.route('/cadastrar_cliente', methods=['GET', 'POST'])
 def cadastrar_cliente():
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     if request.method == 'POST':
         nome = request.form['nome']
         email = request.form['email']
@@ -26,7 +26,7 @@ def cadastrar_cliente():
 @app.route('/listar_clientes', methods=['GET'])
 def listar_clientes():
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     ordem = request.args.get('ordem', 'asc')
     query = f'SELECT * FROM tb_clientes ORDER BY cli_nome {"ASC" if ordem == "asc" else "DESC"}'
     cursor = mysql.connection.cursor()
@@ -40,7 +40,7 @@ def listar_clientes():
 def editar_cliente(cli_id):
     cursor = mysql.connection.cursor()
     if not current_user.is_authenticated:
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
     if request.method == 'POST':
         nome = request.form['nome']
         email = request.form['email']

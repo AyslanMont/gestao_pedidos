@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Logs de Pedidos</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID Log</th>
+                <th>Operação</th>
+                <th>ID Pedido</th>
+                <th>ID Cliente</th>
+                <th>Data/Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.id_log }}</td>
+                <td>{{ log.operacao }}</td>
+                <td>{{ log.log_ped_id }}</td>
+                <td>{{ log.log_cli_id }}</td>
+                <td>{{ log.data_hora }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

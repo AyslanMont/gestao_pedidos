@@ -1,4 +1,3 @@
-
 CREATE DATABASE IF NOT EXISTS db_pedidos;
 USE db_pedidos;
 
@@ -40,13 +39,12 @@ CREATE TABLE IF NOT EXISTS tb_proPed (
     FOREIGN KEY (proPed_pro_id) REFERENCES tb_produtos(pro_id)
 );
 
--- Tabela de Usuários
-CREATE TABLE IF NOT EXISTS tb_usuarios (
-    usu_id INT AUTO_INCREMENT PRIMARY KEY,
-    usu_nome VARCHAR(150) NOT NULL,
-    usu_email VARCHAR(150) NOT NULL,
-    usu_senha VARCHAR(500) NOT NULL,
-    usu_tipo ENUM('admin', 'user') DEFAULT 'user'
+-- Tabela de Admin
+CREATE TABLE IF NOT EXISTS tb_admin (
+    admin_id INT AUTO_INCREMENT PRIMARY KEY,
+    admin_nome VARCHAR(150) NOT NULL,
+    admin_email VARCHAR(150) NOT NULL UNIQUE,
+    admin_senha VARCHAR(500) NOT NULL
 );
 
 -- Tabela de Logs de Pedidos
@@ -58,23 +56,13 @@ CREATE TABLE IF NOT EXISTS logs_pedidos (
     data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de para admin
-CREATE TABLE IF NOT EXISTS tb_admin (
-    admin_id INT AUTO_INCREMENT PRIMARY KEY,
-    admin_nome VARCHAR(150) NOT NULL,
-    admin_email VARCHAR(150) NOT NULL UNIQUE,
-    admin_senha VARCHAR(500) NOT NULL
-);
-
-
-
 -- Trigger para registrar logs de pedidos
 DELIMITER //
 CREATE TRIGGER log_pedidos AFTER INSERT ON tb_pedidos
 FOR EACH ROW
 BEGIN
-    INSERT INTO logs_pedidos (operacao, id_pedido, id_cliente, usuario, data_hora)
-    VALUES ('INSERT', NEW.ped_id, NEW.ped_cli_id, CURRENT_USER(), NOW());
+    INSERT INTO logs_pedidos (operacao, log_ped_id, log_cli_id, data_hora)
+    VALUES ('INSERT', NEW.ped_id, NEW.ped_cli_id, NOW());
 END //
 DELIMITER ;
 
@@ -103,6 +91,4 @@ BEGIN
 END //
 DELIMITER ;
 
-
-select * from tb_admin;
-
+select * from tb_produtos;

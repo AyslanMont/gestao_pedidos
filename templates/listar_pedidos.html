@@ -165,4 +165,46 @@
     }
 </script>
 
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let pedidos = document.querySelectorAll("tbody tr");
+        let totalpedidos = pedidos.length;
+        let pedidosPorPagina = 3;
+        let paginaAtual = 0;
+        let totalPaginas = Math.ceil(totalpedidos / pedidosPorPagina);
+        let paginacaoContainer = document.createElement("div");
+        paginacaoContainer.id = "paginacao";
+        paginacaoContainer.className = "text-center mt-3";
+        document.querySelector(".container").appendChild(paginacaoContainer);
+
+        function atualizarpedidos() {
+            pedidos.forEach((cliente, index) => {
+                cliente.style.display = (index >= paginaAtual * pedidosPorPagina && index < (paginaAtual + 1) * pedidosPorPagina) ? "table-row" : "none";
+            });
+            atualizarPaginacao();
+        }
+
+        function atualizarPaginacao() {
+            let paginacao = document.getElementById("paginacao");
+            paginacao.innerHTML = "";
+            for (let i = 0; i < totalPaginas; i++) {
+                let btn = document.createElement("button");
+                btn.innerText = i + 1;
+                btn.classList.add("btn", "btn-light", "mx-1");
+                if (i === paginaAtual) {
+                    btn.classList.add("btn-primary");
+                }
+                btn.addEventListener("click", function () {
+                    paginaAtual = i;
+                    atualizarpedidos();
+                });
+                paginacao.appendChild(btn);
+            }
+        }
+
+        atualizarpedidos();
+    });
+</script>
+
 {% endblock %}

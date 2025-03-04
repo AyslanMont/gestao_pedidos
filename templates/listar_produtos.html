@@ -164,4 +164,44 @@
     }
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let produtos = document.querySelectorAll("tbody tr");
+        let totalprodutos = produtos.length;
+        let produtosPorPagina = 3;
+        let paginaAtual = 0;
+        let totalPaginas = Math.ceil(totalprodutos / produtosPorPagina);
+        let paginacaoContainer = document.createElement("div");
+        paginacaoContainer.id = "paginacao";
+        paginacaoContainer.className = "text-center mt-3";
+        document.querySelector(".container").appendChild(paginacaoContainer);
+
+        function atualizarprodutos() {
+            produtos.forEach((cliente, index) => {
+                cliente.style.display = (index >= paginaAtual * produtosPorPagina && index < (paginaAtual + 1) * produtosPorPagina) ? "table-row" : "none";
+            });
+            atualizarPaginacao();
+        }
+
+        function atualizarPaginacao() {
+            let paginacao = document.getElementById("paginacao");
+            paginacao.innerHTML = "";
+            for (let i = 0; i < totalPaginas; i++) {
+                let btn = document.createElement("button");
+                btn.innerText = i + 1;
+                btn.classList.add("btn", "btn-light", "mx-1");
+                if (i === paginaAtual) {
+                    btn.classList.add("btn-primary");
+                }
+                btn.addEventListener("click", function () {
+                    paginaAtual = i;
+                    atualizarprodutos();
+                });
+                paginacao.appendChild(btn);
+            }
+        }
+
+        atualizarprodutos();
+    });
+</script>
 {% endblock %}

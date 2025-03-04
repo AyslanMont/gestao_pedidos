@@ -151,6 +151,7 @@
                         </td>
                     </tr>
                 {% endfor %}
+                
             </tbody>
         </table>
     </div>
@@ -159,6 +160,49 @@
     function confirmarExclusao() {
         return confirm("Tem certeza que deseja excluir este cliente?");
     }
+</script>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let clientes = document.querySelectorAll("tbody tr");
+        let totalClientes = clientes.length;
+        let clientesPorPagina = 3;
+        let paginaAtual = 0;
+        let totalPaginas = Math.ceil(totalClientes / clientesPorPagina);
+        let paginacaoContainer = document.createElement("div");
+        paginacaoContainer.id = "paginacao";
+        paginacaoContainer.className = "text-center mt-3";
+        document.querySelector(".container").appendChild(paginacaoContainer);
+
+        function atualizarClientes() {
+            clientes.forEach((cliente, index) => {
+                cliente.style.display = (index >= paginaAtual * clientesPorPagina && index < (paginaAtual + 1) * clientesPorPagina) ? "table-row" : "none";
+            });
+            atualizarPaginacao();
+        }
+
+        function atualizarPaginacao() {
+            let paginacao = document.getElementById("paginacao");
+            paginacao.innerHTML = "";
+            for (let i = 0; i < totalPaginas; i++) {
+                let btn = document.createElement("button");
+                btn.innerText = i + 1;
+                btn.classList.add("btn", "btn-light", "mx-1");
+                if (i === paginaAtual) {
+                    btn.classList.add("btn-primary");
+                }
+                btn.addEventListener("click", function () {
+                    paginaAtual = i;
+                    atualizarClientes();
+                });
+                paginacao.appendChild(btn);
+            }
+        }
+
+        atualizarClientes();
+    });
 </script>
 
 {% endblock %}

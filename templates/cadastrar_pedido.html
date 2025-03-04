@@ -86,10 +86,10 @@
 {% block title %}Cadastrar Pedido{% endblock %}
 {% block content %}
 
-    <div class="container mt-5">
-        <h1 id="centerh" class="mb-4">Cadastrar Pedido</h1>
-        <div id="form-container">
-            <form method="POST" action="{{ url_for('cadastrar_pedido') }} " onsubmit="return confirmarCadastro()">
+<div class="container mt-5">
+    <h1 id="centerh" class="mb-4">Cadastrar Pedido</h1>
+    <div id="form-container">
+        <form method="POST" action="{{ url_for('cadastrar_pedido') }} " onsubmit="return confirmarCadastro()">
             <div class="form-group">
                 <label for="data">Data</label>
                 <input type="date" class="form-control" id="data" name="data" required>
@@ -98,35 +98,74 @@
                 <label for="cli_id">Cliente</label>
                 <select class="form-control" id="cli_id" name="cli_id" required>
                     {% for cliente in clientes %}
-                        <option value="{{ cliente['cli_id'] }}">{{ cliente['cli_nome'] }}</option>
+                    <option value="{{ cliente['cli_id'] }}">{{ cliente['cli_nome'] }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="form-group">
                 <label for="produtos">Produtos</label>
                 {% for produto in produtos %}
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="produto_{{ produto['pro_id'] }}" name="produtos" value="{{ produto['pro_id'] }}">
-                        <label class="form-check-label" for="produto_{{ produto['pro_id'] }}">
-                            {{ produto['pro_nome'] }} - R$ {{ produto['pro_preco'] }}
-                        </label>
-                        <input type="number" class="form-control mt-2" id="quantidade_{{ produto['pro_id'] }}" name="quantidade_{{ produto['pro_id'] }}" placeholder="Quantidade" min="1" max="{{ produto['pro_estoque'] }}" value="1">
-                        <small id="estoque_{{ produto['pro_id'] }}" class="form-text text-muted">
-                            Estoque disponível: {{ produto['pro_estoque'] }} unidades.
-                        </small>
-                    </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="produto_{{ produto['pro_id'] }}" name="produtos"
+                        value="{{ produto['pro_id'] }}">
+                    <label class="form-check-label" for="produto_{{ produto['pro_id'] }}">
+                        {{ produto['pro_nome'] }} - R$ {{ produto['pro_preco'] }}
+                    </label>
+                    <input type="number" class="form-control mt-2" id="quantidade_{{ produto['pro_id'] }}"
+                        name="quantidade_{{ produto['pro_id'] }}" placeholder="Quantidade" min="1"
+                        max="{{ produto['pro_estoque'] }}" value="1">
+                    <small id="estoque_{{ produto['pro_id'] }}" class="form-text text-muted">
+                        Estoque disponível: {{ produto['pro_estoque'] }} unidades.
+                    </small>
+                </div>
                 {% endfor %}
+                <div class="text-center mt-4" id="paginacao"></div>
             </div>
             <br>
             <button type="submit" id="botao1" class="btn btn-primary w-100">Cadastrar</button>
         </form>
-        </div>
-        
-        <script>
-            function confirmarCadastro() {
-                return confirm("Tem certeza que deseja cadastrar este pedido?");
-            }
-        </script>
-        
+    </div>
 
-{% endblock %}
+    <script>
+        function confirmarCadastro() {
+            return confirm("Tem certeza que deseja cadastrar este pedido?");
+        }
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let produtos = document.querySelectorAll(".form-check");
+            let totalProdutos = produtos.length;
+            let produtosPorPagina = 3;
+            let paginaAtual = 0;
+            let totalPaginas = Math.ceil(totalProdutos / produtosPorPagina);
+
+            function atualizarProdutos() {
+                produtos.forEach((produto, index) => {
+                    produto.style.display = (index >= paginaAtual * produtosPorPagina && index < (paginaAtual + 1) * produtosPorPagina) ? "block" : "none";
+                });
+                atualizarPaginacao();
+            }
+
+            function atualizarPaginacao() {
+                let paginacao = document.getElementById("paginacao");
+                paginacao.innerHTML = "";
+                for (let i = 0; i < totalPaginas; i++) {
+                    let btn = document.createElement("button");
+                    btn.innerText = i + 1;
+                    btn.classList.add("btn", "btn-light", "mx-1");
+                    if (i === paginaAtual) {
+                        btn.classList.add("btn-primary");
+                    }
+                    btn.addEventListener("click", function () {
+                        paginaAtual = i;
+                        atualizarProdutos();
+                    });
+                    paginacao.appendChild(btn);
+                }
+            }
+
+            atualizarProdutos();
+        });
+    </script>
+    {% endblock %}

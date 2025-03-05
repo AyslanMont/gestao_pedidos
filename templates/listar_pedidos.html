@@ -130,6 +130,13 @@
             <a href="?ordem=asc" class="btn btn-primary">Ordenar Ascendente</a>
             <a href="?ordem=desc" class="btn btn-secondary">Ordenar Descendente</a>
         </div>
+        <div class="mb-3">
+            <form method="GET" action="{{ url_for('listar_pedidos') }}" class="d-flex">
+                <input type="text" name="nome" class="form-control me-2" placeholder="Pesquisar por nome" value="{{ request.args.get('nome', '') }}">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+        </div>
+        
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>

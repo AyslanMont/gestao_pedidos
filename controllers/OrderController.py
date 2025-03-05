@@ -49,10 +49,18 @@ def cadastrar_pedido():
 @login_required
 def listar_pedidos():
     ordem = request.args.get('ordem', 'asc')
-    dados = Orders.get_all(ordem)
-    if dados is None:
-        dados = []
-    return render_template('listar_pedidos.html', dados=dados, ordem=ordem)
+    nome_cliente = request.args.get('nome', '')
+
+    query = """SELECT *, cli_nome FROM tb_pedidos JOIN tb_clientes  ON ped_cli_id = cli_id
+      WHERE cli_nome LIKE %s ORDER BY cli_nome {} """.format("ASC" if ordem == "asc" else "DESC")
+
+    cursor = mysql.connection.cursor()
+    cursor.execute(query, (f"%{nome_cliente}%",))
+    dados = cursor.fetchall()
+    cursor.close()
+
+    return render_template('listar_pedidos.html', dados=dados, ordem=ordem, nome_cliente=nome_cliente)
+
 
 @app.route('/editar_pedido/<int:ped_id>', methods=['GET', 'POST'])
 @login_required

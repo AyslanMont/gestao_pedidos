@@ -28,12 +28,16 @@ def cadastrar_cliente():
 @login_required
 def listar_clientes():
     ordem = request.args.get('ordem', 'asc')
-    query = f'SELECT * FROM tb_clientes ORDER BY cli_nome {"ASC" if ordem == "asc" else "DESC"}'
+    nome_filtro = request.args.get('nome', '')
+
+    query = f'SELECT * FROM tb_clientes WHERE cli_nome LIKE %s ORDER BY cli_nome {"ASC" if ordem == "asc" else "DESC"}'
     cursor = mysql.connection.cursor()
-    cursor.execute(query)
+    cursor.execute(query, (f"%{nome_filtro}%",))
     dados = cursor.fetchall()
     cursor.close()
-    return render_template('listar_clientes.html', dados=dados, ordem=ordem)
+    
+    return render_template('listar_clientes.html', dados=dados, ordem=ordem, nome_filtro=nome_filtro)
+
 
 
 @app.route('/editar_cliente/<int:cli_id>', methods=['GET', 'POST'])

@@ -35,41 +35,48 @@ def listar_produtos():
         pro_id = request.form['pro_id']
         pro_nome = request.form['pro_nome']
         pro_preco = float(request.form['pro_preco'])
-        quantidade = int(request.form['quantidade'])  # Adicionando a quantidade do produto
+        quantidade = int(request.form['quantidade'])
 
         # Verificar se o produto já existe no carrinho
         produto_existente = next((prod for prod in session['produtos_adicionados'] if prod['pro_id'] == pro_id), None)
 
         if produto_existente:
-            # Atualizar a quantidade e o subtotal se o produto já estiver no carrinho
-            valor = int(produto_existente['pro_qdproduto'])
-            valor2 = valor + quantidade
-            produto_existente['pro_qdproduto'] = valor2
+            produto_existente['pro_qdproduto'] += quantidade
             produto_existente['pro_subtotal'] = produto_existente['pro_qdproduto'] * produto_existente['pro_preco']
         else:
-            # Caso o produto não exista, adicionar um novo com quantidade e subtotal
             produto = {
                 'pro_id': pro_id,
                 'pro_nome': pro_nome,
                 'pro_preco': pro_preco,
                 'pro_qdproduto': quantidade,
-                'pro_subtotal': pro_preco * quantidade  # Calculando o subtotal
+                'pro_subtotal': pro_preco * quantidade
             }
             session['produtos_adicionados'].append(produto)
 
-        session.modified = True  # Marca a sessão como modificada
+        session.modified = True
+        return redirect(url_for('listar_produtos'))
 
-        return redirect(url_for('listar_produtos'))  # Evita reenvio do formulário
-
-    # Consulta os produtos no banco
+    # Consulta os produtos no banco com pesquisa opcional
     ordem = request.args.get('ordem', 'asc')
-    query = f'SELECT * FROM tb_produtos ORDER BY pro_nome {"ASC" if ordem == "asc" else "DESC"}'
+    pesquisa = request.args.get('pesquisa', '').strip()
+
+    query = "SELECT * FROM tb_produtos"
+    params = []
+
+    if pesquisa:
+        query += " WHERE pro_nome LIKE %s"
+        params.append(f"%{pesquisa}%")
+
+    query += f" ORDER BY pro_nome {'ASC' if ordem == 'asc' else 'DESC'}"
+
     cursor = mysql.connection.cursor()
-    cursor.execute(query)
+    cursor.execute(query, params)
     dados = cursor.fetchall()
     cursor.close()
 
-    return render_template('listar_produtos.html', dados=dados, ordem=ordem)
+    return render_template('listar_produtos.html', dados=dados, ordem=ordem, pesquisa=pesquisa)
+
+
 
 
 @app.route('/editar_produto/<int:pro_id>', methods=['GET', 'POST'])

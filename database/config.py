@@ -3,7 +3,7 @@ from flask_mysqldb import MySQL
 import os
 
 
-app.secret_key = str(os.get("SECRET_KEY"))
+app.secret_key = str(os.getenv("SECRET_KEY"))
 app.config['MYSQL_HOST'] = os.getenv("MYSQL_HOST")
 app.config['MYSQL_PORT'] = int(os.getenv("MYSQL_PORT"))
 app.config['MYSQL_USER'] = os.getenv("MYSQL_USER")

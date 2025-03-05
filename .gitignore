@@ -2,3 +2,7 @@ env
 __pycache__/
 *.pyc
 .env
+database/config.py
+database/__pycache__
+models/__pycache__
+controllers/__pycache__

@@ -2,14 +2,13 @@ from gestao_pedidos import app
 from gestao_pedidos.models.Products import Products
 from flask import request, redirect, url_for, render_template, session, flash
 from gestao_pedidos.database.config import mysql
-from flask_login import  login_required,current_user
+from flask_login import  login_required
 
 
 
 @app.route('/cadastrar_produto', methods=['GET', 'POST'])
+@login_required
 def cadastrar_produto():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     if request.method == 'POST':
         nome = request.form['nome']
         descricao = request.form['descricao']
@@ -25,9 +24,8 @@ def cadastrar_produto():
 
 
 @app.route('/listar_produtos', methods=['GET', 'POST'])
+@login_required
 def listar_produtos():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     # Inicializa o carrinho na sessão, se ainda não existir
     if 'produtos_adicionados' not in session:
         session['produtos_adicionados'] = []
@@ -75,10 +73,8 @@ def listar_produtos():
 
 
 @app.route('/editar_produto/<int:pro_id>', methods=['GET', 'POST'])
+@login_required
 def editar_produto(pro_id):
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-
     cursor = mysql.connection.cursor()
 
     # Se for uma requisição GET, exibe os dados para edição
@@ -118,6 +114,7 @@ def editar_produto(pro_id):
 
 
 @app.route('/excluir_produto/<int:pro_id>', methods=['GET', 'POST'])
+@login_required
 def excluir_produto(pro_id):
     cursor = mysql.connection.cursor()
     

@@ -5,7 +5,6 @@ from gestao_pedidos.models.Client import Client
 from gestao_pedidos.models.Orders import Orders
 import os
 from flask import render_template, redirect, url_for, request, flash
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, logout_user, current_user
 from flask_login import LoginManager
 

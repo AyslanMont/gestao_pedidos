@@ -3,13 +3,11 @@ from gestao_pedidos.models.Orders import Orders
 from gestao_pedidos.database.config import mysql
 from gestao_pedidos.models.Client import Client
 from flask import request, render_template, redirect, url_for, session, flash
-from flask_login import login_required, current_user
+from flask_login import login_required
 
 @app.route('/cadastrar_pedido', methods=['GET', 'POST'])
+@login_required
 def cadastrar_pedido():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
-    # Obter clientes e produtos cadastrados
     cursor = mysql.connection.cursor()
     cursor.execute("SELECT * FROM tb_clientes")
     clientes = cursor.fetchall()
@@ -48,9 +46,8 @@ def cadastrar_pedido():
     return render_template('cadastrar_pedido.html', clientes=clientes, produtos=produtos, produtos_selecionados=[], total_pedido=0)
 
 @app.route('/listar_pedidos', methods=['GET'])
+@login_required
 def listar_pedidos():
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     ordem = request.args.get('ordem', 'asc')
     dados = Orders.get_all(ordem)
     if dados is None:
@@ -58,9 +55,8 @@ def listar_pedidos():
     return render_template('listar_pedidos.html', dados=dados, ordem=ordem)
 
 @app.route('/editar_pedido/<int:ped_id>', methods=['GET', 'POST'])
+@login_required
 def editar_pedido(ped_id):
-    if not current_user.is_authenticated:
-        return redirect(url_for('login'))
     cursor = mysql.connection.cursor()
     if request.method == 'POST':
         # Recuperar os dados do formulário

@@ -60,7 +60,7 @@ def home():
     return render_template("home.html", dados=dados, ordem=ordem)
 
 @app.route("/logout")
+@login_required
 def logout():
-    if current_user.is_authenticated:
-        logout_user()
-    return redirect(url_for("login"))
+    logout_user()
+    return redirect(url_for("index"))

@@ -1,12 +1,11 @@
 <header>
     <style>
-        /* Estilo Geral */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
+         body {
+            background-color: #e6f0ff;
             color: #333;
+            font-family: Arial, sans-serif;
         }
-
+    
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -57,33 +56,32 @@
         }
 
         .btn-success {
-            background-color: #28a745;
-            color: #fff;
-        }
-
-        .btn-success:hover {
-            background-color: #218838;
-        }
-
-        .btn-info {
             background-color: #17a2b8;
             color: #fff;
         }
 
-        .btn-info:hover {
+        .btn-success:hover {
             background-color: #138496;
         }
 
+        .btn-info {
+            background-color: #0056b3 ;
+            color: #fff;
+        }
+        .btn-info:hover {
+            background-color: #004494;
+        }
+
         .btn-danger {
-            background-color: #dc3545;
+            background-color: #17a2b8;
             color: #fff;
         }
 
         .btn-danger:hover {
-            background-color: #c82333;
+            background-color: #138496;
         }
 
-        /* Feedback de mensagens */
+        
         .alert {
             font-size: 0.9rem;
             font-weight: bold;
@@ -91,7 +89,6 @@
             margin-top: 10px;
         }
 
-        /* Estilo da tabela */
         .table {
             margin-top: 20px;
             border-collapse: collapse;
@@ -119,23 +116,6 @@
             background-color: #e9ecef;
         }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .btn {
-                font-size: 0.9rem;
-                padding: 8px;
-            }
-
-            .table thead th,
-            .table tbody td {
-                font-size: 0.9rem;
-                padding: 8px;
-            }
-        }
     </style>
 </header>
 
@@ -165,7 +145,7 @@
             <div class="col-md-3 mb-3">
                 <button 
                     type="submit" 
-                    class="btn btn-success w-100" 
+                    class="btn btn-primary w-100" 
                     name="filtro" 
                     value="clientes_acima_1000">
                     Clientes com Compras > R$1000
@@ -176,7 +156,7 @@
             <div class="col-md-3 mb-3">
                 <button 
                     type="submit" 
-                    class="btn btn-info w-100" 
+                    class="btn btn-primary w-100" 
                     name="filtro" 
                     value="top_produtos">
                     Top 10 Produtos Mais Vendidos
@@ -187,7 +167,7 @@
             <div class="col-md-3 mb-3">
                 <button 
                     type="submit" 
-                    class="btn btn-danger w-100" 
+                    class="btn btn-primary w-100" 
                     name="filtro" 
                     value="produtos_nao_vendidos">
                     Produtos Não Vendidos

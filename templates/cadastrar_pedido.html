@@ -1,61 +1,72 @@
 <header>
     <style>
         body {
-            background-color: #e6f0ff !important;
+            background-color: #f1f7ff;
             color: #333;
-            font-family: Arial, sans-serif !important; 
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
         }
-    
+
         .text-center {
-            color: #333 !important;
+            color: #333;
         }
-        
+
         #centerh {
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            font-size: 2rem;
-            color: #0056b3;
+            font-size: 2.5rem;
+            color: #0066cc;
+            margin-bottom: 30px;
         }
 
         #form-container {
-            border: 1px solid #ccc;
-            border-radius: 10px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
             width: 100%;
-            max-width: 800px;
-            padding: 30px;
-            margin: 20px auto;
-            background-color: #fff;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 850px;
+            padding: 40px;
+            margin: 50px auto;
+            background-color: #ffffff;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
         }
 
         .form-group label {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            color: #444;
         }
 
         .form-control {
-            border: 1px solid #ced4da;
-            padding: 10px 15px;
-            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 1rem;
             transition: border-color 0.3s;
+            width: 100%;
         }
 
         .form-control:focus {
-            border-color: #0056b3;
-            box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
+            border-color: #0066cc;
+            box-shadow: 0 0 10px rgba(0, 102, 204, 0.2);
         }
 
         .input-group {
             display: flex;
             align-items: center;
-            gap: 10px; 
+            gap: 15px;
+            margin-bottom: 15px;
         }
 
         .input-group input[type="number"] {
             width: 80px;
+            font-size: 1rem;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
 
         textarea.form-control {
@@ -63,32 +74,74 @@
         }
 
         #botao1 {
-            background-color: #004494;
-            color: #fff;
+            background-color: #0066cc;
+            color: white;
             border: none;
-            padding: 8px 15px; 
-            font-size: 0.9rem; 
+            padding: 12px 25px;
+            font-size: 1.1rem;
             font-weight: bold;
             border-radius: 8px;
+            width: 200px;
+            cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
-            width: 120px; 
-            margin: 5px;
         }
 
         #botao1:hover {
-            background-color: #004494;
-            transform: scale(1.02);
-            cursor: pointer;
+            background-color: #005bb5;
+            transform: scale(1.05);
         }
 
         .button-container {
             display: flex;
             justify-content: center;
-            margin-top: 20px;
+            margin-top: 30px;
         }
 
         .search-input {
-            flex-grow: 1; /* Faz o campo de busca ocupar o espaço restante */
+            flex-grow: 1;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #0066cc;
+        }
+
+        #produtos-selecionados {
+            margin-top: 30px;
+        }
+
+        .produto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .produto-item span {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .produto-item button {
+            background-color: #ff3333;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .produto-item button:hover {
+            background-color: #e60000;
         }
     </style>
 </header>
@@ -196,7 +249,7 @@
                     }
 
                     produtosSelect.selectedIndex = -1;
-                    quantidadeInput.value = 1; // 
+                    quantidadeInput.value = 1;
                 }
             });
 

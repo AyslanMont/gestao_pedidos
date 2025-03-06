@@ -1,11 +1,17 @@
 <header>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa; 
+            font-family: Arial, sans-serif !important;
+            background-color: #e6f0ff !important; 
             color: #333; 
-            margin: 0;
-            padding: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
         }
 
         h1 {
@@ -13,36 +19,84 @@
             font-weight: bold;
             color: #0056b3; 
             margin-top: 50px;
+            text-align: center;
         }
 
         p {
             font-size: 1.2rem;
             color: #555; 
-        }
-
-        .text-center {
             text-align: center;
         }
 
-    
-        .content-wrapper {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 80vh; 
+        .btn-primary,
+        .btn-secondary {
+            margin-right: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
-      
-        h1:hover {
-            color: #003d80; 
-            transform: scale(1.02);
-            transition: all 0.3s ease;
+        .btn-primary:hover {
+            background-color: #004494;
+            transform: scale(1.05);
         }
 
-        p:hover {
-            color: #333; 
-            transition: all 0.3s ease;
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            transform: scale(1.05);
+        }
+
+        .table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .table thead th {
+            background-color: #0056b3;
+            color: white;
+            text-align: left;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background-color: #f8f9fa;
+        }
+
+        .table tbody td {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .btn-warning {
+            color: #fff !important;
+            background-color: #ffc107 ;
+            border: none;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-danger {
+            color: #fff;
+            background-color: #dc3545;
+            border: none;
+            padding: 5px 10px;
+            font-size: 0.9rem;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
         }
     </style>
 </header>

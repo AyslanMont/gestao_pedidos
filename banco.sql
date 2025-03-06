@@ -68,14 +68,24 @@ DELIMITER ;
 
 -- Trigger para atualizar o estoque
 DELIMITER //
-CREATE TRIGGER atualizar_estoque AFTER INSERT ON tb_proPed
+CREATE TRIGGER atualizar_estoque
+BEFORE INSERT ON tb_proPed
 FOR EACH ROW
 BEGIN
-    UPDATE tb_produtos 
-    SET pro_quantidade = pro_quantidade - NEW.proPed_qdproduto 
-    WHERE pro_id = NEW.proPed_pro_id;
+    DECLARE estoque_atual INT;
+    SELECT pro_quantidade INTO estoque_atual FROM tb_produtos WHERE pro_id = NEW.proPed_pro_id;
+  
+    IF estoque_atual < NEW.proPed_qdproduto THEN
+        SIGNAL SQLSTATE '45000' -- PRECISA DISSO PARA PODER INTERROMPER CASO O ESTOQUE FOR MENOR QUE O PEDIDO E TAMBEM PARA APARECER A MENSAGEM (:  
+        SET MESSAGE_TEXT = 'Estoque insuficiente para completar o pedido';
+    ELSE
+        UPDATE tb_produtos 
+        SET pro_quantidade = pro_quantidade - NEW.proPed_qdproduto 
+        WHERE pro_id = NEW.proPed_pro_id;
+    END IF;
 END //
 DELIMITER ;
+
 
 -- Procedimento para validar pedidos
 DELIMITER //

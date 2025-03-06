@@ -5,7 +5,6 @@ from gestao_pedidos.database.config import mysql
 from flask_login import  login_required
 
 
-
 @app.route('/cadastrar_produto', methods=['GET', 'POST'])
 @login_required
 def cadastrar_produto():
@@ -22,6 +21,35 @@ def cadastrar_produto():
     return render_template('cadastrar_produto.html')
 
 
+@app.route('/adicionar_pedido', methods=['POST'])
+@login_required
+def adicionar_pedido():
+    try:
+        pro_id = request.form['pro_id']
+        quantidade = int(request.form['quantidade'])
+        cursor = mysql.connection.cursor()
+        cursor.execute("CALL validar_pedido(%s, %s, %s)", (session['user_id'], pro_id, quantidade))
+        resultado = cursor.fetchone()
+
+
+        if resultado and resultado['valido']: 
+            cursor.execute(
+                "INSERT INTO tb_proPed (proPed_ped_id, proPed_pro_id, proPed_qdproduto, proPed_subtotal) "
+                "VALUES (%s, %s, %s, (SELECT pro_preco FROM tb_produtos WHERE pro_id = %s) * %s)",
+                (session['pedido_id'], pro_id, quantidade, pro_id, quantidade)
+            )
+            mysql.connection.commit()
+            flash("Produto adicionado ao pedido com sucesso!", "success")
+        else:
+            flash("Estoque insuficiente para este pedido!", "danger")
+
+        cursor.close()
+    
+    except Exception as e:
+        mysql.connection.rollback()
+        flash("Erro ao adicionar pedido: estoque insuficiente ou problema no banco de dados.", "danger")
+
+    return redirect(url_for('listar_produtos'))
 
 @app.route('/listar_produtos', methods=['GET', 'POST'])
 @login_required

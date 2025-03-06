@@ -6,11 +6,10 @@
             font-family: Arial, sans-serif !important; 
         }
     
-        .text-center{
+        .text-center {
             color: #333 !important;
         }
         
-       
         #centerh {
             display: flex;
             align-items: center;
@@ -20,7 +19,6 @@
             color: #0056b3;
         }
 
-        
         #form-container {
             border: 1px solid #ccc;
             border-radius: 10px;
@@ -32,7 +30,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
-        
         .form-group label {
             font-weight: bold;
             margin-bottom: 5px;
@@ -51,20 +48,31 @@
             box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
         }
 
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+        }
+
+        .input-group input[type="number"] {
+            width: 80px;
+        }
+
         textarea.form-control {
             resize: none;
         }
 
-        
         #botao1 {
-            background-color: #0056b3;
+            background-color: #004494;
             color: #fff;
             border: none;
-            padding: 12px 20px;
-            font-size: 1rem;
+            padding: 8px 15px; 
+            font-size: 0.9rem; 
             font-weight: bold;
             border-radius: 8px;
             transition: background-color 0.3s, transform 0.2s;
+            width: 120px; 
+            margin: 5px;
         }
 
         #botao1:hover {
@@ -73,21 +81,32 @@
             cursor: pointer;
         }
 
-        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .search-input {
+            flex-grow: 1; /* Faz o campo de busca ocupar o espaço restante */
+        }
     </style>
 </header>
+
 {% extends "base.html" %}
 {% block title %}Cadastrar Pedido{% endblock %}
 {% block content %}
 
 <div class="container mt-5">
     <div id="form-container">
-        <form method="POST" action="{{ url_for('cadastrar_pedido') }} " onsubmit="return confirmarCadastro()">
+        <form method="POST" action="{{ url_for('cadastrar_pedido') }}">
             <h1 id="centerh" class="text-center mb-4">Cadastrar Pedido</h1>
+
             <div class="form-group">
                 <label for="data">Data</label>
                 <input type="date" class="form-control" id="data" name="data" required>
             </div>
+
             <div class="form-group">
                 <label for="cli_id">Cliente</label>
                 <select class="form-control" id="cli_id" name="cli_id" required>
@@ -96,70 +115,103 @@
                     {% endfor %}
                 </select>
             </div>
+
             <div class="form-group">
-                <label for="produtos">Produtos</label>
-                {% for produto in produtos %}
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="produto_{{ produto['pro_id'] }}" name="produtos"
-                        value="{{ produto['pro_id'] }}">
-                    <label class="form-check-label" for="produto_{{ produto['pro_id'] }}">
-                        {{ produto['pro_nome'] }} - R$ {{ produto['pro_preco'] }}
-                    </label>
-                    <input type="number" class="form-control mt-2" id="quantidade_{{ produto['pro_id'] }}"
-                        name="quantidade_{{ produto['pro_id'] }}" placeholder="Quantidade" min="1"
-                        max="{{ produto['pro_estoque'] }}" value="1">
-                    <small id="estoque_{{ produto['pro_id'] }}" class="form-text text-muted">
-                        Estoque disponível: {{ produto['pro_estoque'] }} unidades.
-                    </small>
+                <label for="produtos">Quantidade e nome do produto</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="quantidade" name="quantidade" value="1" min="1" required>
+                    <input type="text" id="produto-search" class="search-input" placeholder="Digite o nome do produto...">
                 </div>
-                {% endfor %}
-                <div class="text-center mt-4" id="paginacao"></div>
+                <select class="form-control" id="produtos" name="produtos" multiple>
+                    {% for produto in produtos %}
+                    <option value="{{ produto['pro_id'] }}" data-nome="{{ produto['pro_nome'] }}" data-preco="{{ produto['pro_preco'] }}" data-estoque="{{ produto['pro_quantidade'] }}">
+                        {{ produto['pro_nome'] }} - R$ {{ produto['pro_preco'] }}
+                    </option>
+                    {% endfor %}
+                </select>
             </div>
-            <br>
-            <button type="submit" id="botao1" class="btn btn-primary w-100">Cadastrar</button>
+
+            <div id="produtos-selecionados">
+                <h3>Produtos Selecionados</h3>
+                <div id="itens-pedido"></div>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" id="botao1" class="btn btn-success">Cadastrar Pedido</button>
+            </div>
         </form>
     </div>
 
     <script>
-        function confirmarCadastro() {
-            return confirm("Tem certeza que deseja cadastrar este pedido?");
-        }
-    </script>
-
-    <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let produtos = document.querySelectorAll(".form-check");
-            let totalProdutos = produtos.length;
-            let produtosPorPagina = 3;
-            let paginaAtual = 0;
-            let totalPaginas = Math.ceil(totalProdutos / produtosPorPagina);
+            const produtosSelect = document.getElementById('produtos');
+            const quantidadeInput = document.getElementById('quantidade');
+            const produtosContainer = document.getElementById('itens-pedido');
+            const searchInput = document.getElementById('produto-search');
 
-            function atualizarProdutos() {
-                produtos.forEach((produto, index) => {
-                    produto.style.display = (index >= paginaAtual * produtosPorPagina && index < (paginaAtual + 1) * produtosPorPagina) ? "block" : "none";
-                });
-                atualizarPaginacao();
-            }
+            searchInput.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                const options = produtosSelect.options;
 
-            function atualizarPaginacao() {
-                let paginacao = document.getElementById("paginacao");
-                paginacao.innerHTML = "";
-                for (let i = 0; i < totalPaginas; i++) {
-                    let btn = document.createElement("button");
-                    btn.innerText = i + 1;
-                    btn.classList.add("btn", "btn-light", "mx-1");
-                    if (i === paginaAtual) {
-                        btn.classList.add("btn-primary");
-                    }
-                    btn.addEventListener("click", function () {
-                        paginaAtual = i;
-                        atualizarProdutos();
-                    });
-                    paginacao.appendChild(btn);
+                for (let i = 0; i < options.length; i++) {
+                    const option = options[i];
+                    const productName = option.getAttribute('data-nome').toLowerCase();
+                    option.style.display = productName.includes(filter) ? '' : 'none';
                 }
-            }
+            });
 
-            atualizarProdutos();
+            produtosSelect.addEventListener('change', function() {
+                const produtoSelecionado = produtosSelect.options[produtosSelect.selectedIndex];
+                if (produtoSelecionado) {
+                    const produtoId = produtoSelecionado.value;
+                    const produtoNome = produtoSelecionado.getAttribute('data-nome');
+                    const produtoPreco = parseFloat(produtoSelecionado.getAttribute('data-preco'));
+                    const quantidade = parseInt(quantidadeInput.value);
+
+                    const itemExistente = document.getElementById(`produto-${produtoId}`);
+
+                    if (!itemExistente) {
+                        const itemPedido = document.createElement('div');
+                        itemPedido.classList.add('produto-item');
+                        itemPedido.id = `produto-${produtoId}`;
+                        itemPedido.innerHTML = `
+                            <div>
+                                ${produtoNome} - Quantidade: 
+                                <span>${quantidade}</span>
+                                <span> R$ ${produtoPreco.toFixed(2)}</span>
+                            </div>
+                            <div>
+                                <span>Total: <span id="total-${produtoId}">R$ ${(produtoPreco * quantidade).toFixed(2)}</span></span>
+                            </div>
+                            <button type="button" class="btn btn-danger" onclick="removerProduto(${produtoId})">Remover</button>
+                            <input type="hidden" name="produto_ids[]" value="${produtoId}">
+                            <input type="hidden" name="quantidades[]" value="${quantidade}">
+                        `;
+                        produtosContainer.appendChild(itemPedido);
+                    } else {
+                        const quantidadeInputExistente = itemExistente.querySelector('span');
+                        const novaQuantidade = parseInt(quantidadeInputExistente.innerText) + quantidade;
+                        quantidadeInputExistente.innerText = novaQuantidade;
+                        atualizarTotal(produtoId, produtoPreco, novaQuantidade);
+                    }
+
+                    produtosSelect.selectedIndex = -1;
+                    quantidadeInput.value = 1; // 
+                }
+            });
+
+            window.atualizarTotal = function(produtoId, preco, quantidade) {
+                const total = preco * quantidade;
+                document.getElementById(`total-${produtoId}`).innerText = `R$ ${total.toFixed(2)}`;
+            };
+
+            window.removerProduto = function(produtoId) {
+                const itemPedido = document.getElementById(`produto-${produtoId}`);
+                itemPedido.remove();
+                const selectProduto = document.getElementById('produtos');
+                selectProduto.querySelector(`option[value="${produtoId}"]`).selected = false;
+            };
         });
     </script>
-    {% endblock %}
+
+{% endblock %}

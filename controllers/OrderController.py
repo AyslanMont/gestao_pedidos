@@ -16,7 +16,6 @@ def cadastrar_pedido():
 
         cursor.execute("SELECT * FROM tb_produtos")
         produtos = cursor.fetchall()
-        cursor.close()
 
         if request.method == 'POST':
             data = request.form.get('data')
@@ -24,41 +23,48 @@ def cadastrar_pedido():
             produtos_selecionados = []
             total_pedido = 0
 
-            for produto in produtos:
-                produto_id = str(produto['pro_id'])
-                if produto_id in request.form.getlist('produtos'):
-                    quantidade = int(request.form.get(f'quantidade_{produto_id}', 1))
+            produto_ids = request.form.getlist('produto_ids[]')
+            quantidades = request.form.getlist('quantidades[]')
 
+            for produto_id, quantidade in zip(produto_ids, quantidades):
+                quantidade = int(quantidade)  
+                cursor.execute("SELECT * FROM tb_produtos WHERE pro_id = %s", (produto_id,))
+                produto = cursor.fetchone()
 
-                    estoque_disponivel = produto['pro_quantidade']
-                    if quantidade > estoque_disponivel:
-                        flash(f"Quantidade de estoque insuficiente para o produto {produto['pro_nome']}! Disponível: {estoque_disponivel}", "danger")
-                        return redirect(url_for('cadastrar_pedido'))
-                    
-                    subtotal = produto['pro_preco'] * quantidade
-                    total_pedido += subtotal
-                    produtos_selecionados.append({
-                        'pro_id': produto['pro_id'],
-                        'pro_nome': produto['pro_nome'],
-                        'quantidade': quantidade,
-                        'subtotal': subtotal
-                    })
+                if produto['pro_quantidade'] < quantidade:
+                    flash(f"Quantidade de estoque insuficiente para o produto {produto['pro_nome']}! Disponível: {produto['pro_quantidade']}", "danger")
+                    return redirect(url_for('cadastrar_pedido'))
 
-            novo_pedido = Orders(cli_id=cli_id, data=data, total=total_pedido, produtos=produtos_selecionados)
-            resultado = novo_pedido.save()
+                subtotal = produto['pro_preco'] * quantidade
+                total_pedido += subtotal
+                produtos_selecionados.append({
+                    'pro_id': produto['pro_id'],
+                    'pro_nome': produto['pro_nome'],
+                    'quantidade': quantidade,
+                    'subtotal': subtotal
+                })
 
-            flash(resultado['message'], 'success' if resultado['success'] else 'danger')
+            cursor.execute("INSERT INTO tb_pedidos (ped_cli_id, ped_data, ped_total) VALUES (%s, %s, %s)", (cli_id, data, total_pedido))
+            pedido_id = cursor.lastrowid
+
+            for produto in produtos_selecionados:
+                cursor.execute("INSERT INTO tb_proPed (proPed_ped_id, proPed_pro_id, proPed_qdproduto, proPed_subtotal) VALUES (%s, %s, %s, %s)",
+                               (pedido_id, produto['pro_id'], produto['quantidade'], produto['subtotal']))
+
+            mysql.connection.commit()
+            flash("Pedido cadastrado com sucesso!", "success")
             return redirect(url_for('listar_pedidos'))
 
-        return render_template('cadastrar_pedido.html', clientes=clientes, produtos=produtos, produtos_selecionados=[], total_pedido=0)
+        return render_template('cadastrar_pedido.html', clientes=clientes, produtos=produtos)
 
     except Exception as e:
-        if "'pro_estoque'" in str(e): 
-            flash("Quantidade de estoque invalida!", "danger")
+        mysql.connection.rollback() 
+        flash(f"Erro ao cadastrar pedido: {str(e)}", "danger")
+        return redirect(url_for('cadastrar_pedido'))
 
-    return redirect(url_for('listar_pedidos'))
-
-
+    finally:
+        cursor.close()
+     
 @app.route('/listar_pedidos', methods=['GET'])
 @login_required
 def listar_pedidos():
